@@ -33,12 +33,16 @@ class TempProvider():
         for sensor in sensorList:
             sensors.append(TempProvider(sensor))
         return sensors
+
     @classmethod
     def _listSensors(cls):
         return os.listdir(cls.PARENT_SENSOR_PATH)
 
     def __init__(self, sensorId):
+        os.system('modprobe w1-gpio')
+        os.system('modprobe w1-therm')
         self._sensorId = sensorId
+
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):

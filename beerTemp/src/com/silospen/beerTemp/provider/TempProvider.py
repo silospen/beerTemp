@@ -36,11 +36,11 @@ class TempProvider():
 
     @classmethod
     def _listSensors(cls):
+        os.system('modprobe w1-gpio')
+        os.system('modprobe w1-therm')
         return os.listdir(cls.PARENT_SENSOR_PATH)
 
     def __init__(self, sensorId):
-        os.system('modprobe w1-gpio')
-        os.system('modprobe w1-therm')
         self._sensorId = sensorId
 
 

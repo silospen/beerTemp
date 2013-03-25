@@ -31,7 +31,8 @@ class TempProvider():
             return []
 
         for sensor in sensorList:
-            sensors.append(TempProvider(sensor))
+            if not "w1_bus" in sensor:
+                sensors.append(TempProvider(sensor))
         return sensors
 
     @classmethod

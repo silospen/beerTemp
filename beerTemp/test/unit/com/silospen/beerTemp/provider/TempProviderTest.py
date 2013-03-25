@@ -38,6 +38,11 @@ class TempProviderTest(unittest.TestCase):
         self.assertEqual([TempProvider("test_serial")], TempProvider.create())
 
     @patch('src.com.silospen.beerTemp.provider.TempProvider.TempProvider._listSensors',
+        mock.Mock(return_value=["test_serial", "w1_bus_master_1"]))
+    def testCreate_singleProvider_excludes_busMaster(self):
+        self.assertEqual([TempProvider("test_serial")], TempProvider.create())
+
+    @patch('src.com.silospen.beerTemp.provider.TempProvider.TempProvider._listSensors',
         mock.Mock(return_value=["test_serial1", "test_serial2", "test_serial3"]))
     def testCreate_multipleProviders(self):
         self.assertEqual([TempProvider("test_serial1"), TempProvider("test_serial2"), TempProvider("test_serial3")],

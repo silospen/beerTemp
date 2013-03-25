@@ -6,9 +6,6 @@ class TempProvider():
     SENSOR_PATH = PARENT_SENSOR_PATH + "{0}/w1_slave"
     LOG = logging.getLogger('TempProvider')
 
-    def __init__(self, sensorId):
-        self.sensorId = sensorId
-
     def getTemp(self):
         with TempProvider._rawTempHandle(self.SENSOR_PATH.format(self.sensorId)) as sensorInput:
             return self._parseRawTemp(sensorInput.read())
@@ -33,10 +30,12 @@ class TempProvider():
         for sensor in sensorList:
             sensors.append(TempProvider(sensor))
         return sensors
-
     @classmethod
     def _listSensors(cls):
         return os.listdir(cls.PARENT_SENSOR_PATH)
+
+    def __init__(self, sensorId):
+        self.sensorId = sensorId
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):

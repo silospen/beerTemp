@@ -47,10 +47,10 @@ class BeerTempTest(unittest.TestCase):
                  call._write("1234\tsensorid3\t21.0\t0\n")]
         tempLogger._write.assert_has_calls(calls)
 
-        tempProvider3.getTemp = mock.Mock(return_value=18.8)
+        tempProvider3.getTemp = mock.Mock(return_value=19.8)
         time.time = mock.Mock(return_value=5678)
         beerTemp.testTempAndLog()
         self.assertTrue(heatingElement.isActive())
         calls = [call._write("5678\tsensorid1\t18.0\t1\n"), call._write("5678\tsensorid2\t22.0\t1\n"),
-                 call._write("5678\tsensorid3\t18.8\t1\n")]
+                 call._write("5678\tsensorid3\t19.8\t1\n")]
         tempLogger._write.assert_has_calls(calls)

@@ -6,7 +6,7 @@ from src.com.silospen.beerTemp.logger.TempLogger import TempLogger
 from src.com.silospen.beerTemp.provider.TempProvider import TempProvider
 
 class BeerTemp():
-    THRESHOLD = 19
+    THRESHOLD = 20
     LOG = logging.getLogger("BeerTemp")
 
     def __init__(self, tempProviders, heatingElement, tempLogger):

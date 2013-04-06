@@ -14,7 +14,7 @@ class TempProvider():
             return self._parseRawTemp(sensorInput.read())
 
     def _parseRawTemp(self, sensorInput):
-        return int(sensorInput.split("t=")[1]) / 1000.
+        return int(sensorInput.split("t=")[1]) / 1000. if 'YES' in sensorInput else None
 
     @staticmethod
     def _rawTempHandle(sensorPath):

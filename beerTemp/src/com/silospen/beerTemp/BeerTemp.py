@@ -15,7 +15,12 @@ class BeerTemp():
         self._tempLogger = tempLogger
 
     def testTempAndLog(self):
-        temps = [(tempProvider.getId(), tempProvider.getTemp()) for tempProvider in self._tempProviders]
+        temps = []
+        for tempProvider in self._tempProviders:
+            temp = tempProvider.getTemp()
+            if temp is not None:
+                temps.append((tempProvider.getId(), temp))
+
         if sum(temp[1] < self.THRESHOLD for temp in temps) > len(temps) // 2:
             self._heatingElement.activate()
         else:

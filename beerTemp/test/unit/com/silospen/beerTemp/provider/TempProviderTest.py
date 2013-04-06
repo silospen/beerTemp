@@ -11,20 +11,20 @@ class TempProviderTest(unittest.TestCase):
         self.assertEqual(20.25, tempProvider.getTemp())
         TempProvider._rawTempHandle.assert_called_once_with("/sys/bus/w1/devices/test_serial/w1_slave")
 
-    def testGetTemp_withEmptyTempString(self):
-        self._setupRawTempExpectation("")
-        tempProvider = TempProvider("test_serial")
-        self.assertRaises(Exception, tempProvider.getTemp)
-        TempProvider._rawTempHandle.assert_called_once_with("/sys/bus/w1/devices/test_serial/w1_slave")
-
     def testGetTemp_withMissingTempString(self):
         self._setupRawTempExpectation("29 00 4b 46 ff ff 08 10 eb : crc=eb YES\n29 00 4b 46 ff ff 08 10 eb t=")
         tempProvider = TempProvider("test_serial")
         self.assertRaises(Exception, tempProvider.getTemp)
         TempProvider._rawTempHandle.assert_called_once_with("/sys/bus/w1/devices/test_serial/w1_slave")
 
+    def testGetTemp_withInvalidReading(self):
+        self._setupRawTempExpectation("29 00 4b 46 ff ff 08 10 eb : crc=eb NO\n29 00 4b 46 ff ff 08 10 eb t=20250")
+        tempProvider = TempProvider("test_serial")
+        self.assertEqual(None, tempProvider.getTemp())
+        TempProvider._rawTempHandle.assert_called_once_with("/sys/bus/w1/devices/test_serial/w1_slave")
+
     def testGetTemp_withBustedTempString(self):
-        self._setupRawTempExpectation("29 00 4b 46 ff ff 08 10 eb : crc=eb Y")
+        self._setupRawTempExpectation("29 00 4b 46 ff ff 08 10 eb : crc=eb YES")
         tempProvider = TempProvider("test_serial")
         self.assertRaises(Exception, tempProvider.getTemp)
         TempProvider._rawTempHandle.assert_called_once_with("/sys/bus/w1/devices/test_serial/w1_slave")

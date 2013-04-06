@@ -27,6 +27,25 @@ class BeerTempTest(unittest.TestCase):
         self.assertFalse(heatingElement.isActive())
         tempLogger._write.assert_called_with("5678\tsensorid\t22.0\t0\n")
 
+    def testTestTempAndLog_withSingleProvider_withNoneReturns(self):
+        tempProvider = TempProvider("sensorid")
+        tempProvider.getTemp = mock.Mock(return_value=None)
+        heatingElement = HeatingElement()
+        tempLogger = TempLogger()
+        tempLogger._write = mock.Mock()
+        time.time = mock.Mock(return_value=1234)
+
+        beerTemp = BeerTemp([tempProvider], heatingElement, tempLogger)
+        beerTemp.testTempAndLog()
+        self.assertFalse(heatingElement.isActive())
+        self.assertNotIn(call("1234\tsensorid\t18.0\t1\n"), tempLogger._write.mock_calls)
+
+        tempProvider.getTemp = mock.Mock(return_value=22.0)
+        time.time = mock.Mock(return_value=5678)
+        beerTemp.testTempAndLog()
+        self.assertFalse(heatingElement.isActive())
+        tempLogger._write.assert_called_with("5678\tsensorid\t22.0\t0\n")
+
     def testTestTempAndLog_withMultipleProviders(self):
         tempProvider1 = TempProvider("sensorid1")
         tempProvider1.getTemp = mock.Mock(return_value=18.0)

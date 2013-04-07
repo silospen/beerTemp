@@ -10,6 +10,7 @@ class TempLogger():
     def _write(self, line):
         with open(self.LOG_FILE, 'a+') as log:
             log.write(line)
+            log.write('\n')
 
 
 

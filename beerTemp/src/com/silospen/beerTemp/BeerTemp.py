@@ -1,6 +1,7 @@
 import logging
 import tempfile
 import time
+import os
 from src.com.silospen.beerTemp.heater.HeatingElement import HeatingElement
 from src.com.silospen.beerTemp.logger.TempLogger import TempLogger
 from src.com.silospen.beerTemp.provider.TempProvider import TempProvider
@@ -31,10 +32,14 @@ class BeerTemp():
         for temps in temps:
             self._tempLogger.log(currentTime, temps[0], temps[1], self._heatingElement.isActive())
 
+    def publishLog(self):
+        os.system('sh /root/publishLog.sh')
+
     def schedule(self):
         while True:
             try:
                 self.testTempAndLog()
+                self.publishLog()
             except Exception as e:
                 self.LOG.error(e)
             time.sleep(60)

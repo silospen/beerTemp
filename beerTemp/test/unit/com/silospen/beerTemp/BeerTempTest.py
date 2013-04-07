@@ -1,3 +1,4 @@
+import json
 import unittest
 import time
 from unittest import mock
@@ -19,13 +20,15 @@ class BeerTempTest(unittest.TestCase):
         beerTemp = BeerTemp([tempProvider], heatingElement, tempLogger)
         beerTemp.testTempAndLog()
         self.assertTrue(heatingElement.isActive())
-        tempLogger._write.assert_called_with("1234\tsensorid\t18.0\t1\n")
+        tempLogger._write.assert_called_with(
+            json.dumps({"active": True, "sensorId": "sensorid", "temp": 18.0, "time": 1234}))
 
         tempProvider.getTemp = mock.Mock(return_value=22.0)
         time.time = mock.Mock(return_value=5678)
         beerTemp.testTempAndLog()
         self.assertFalse(heatingElement.isActive())
-        tempLogger._write.assert_called_with("5678\tsensorid\t22.0\t0\n")
+        tempLogger._write.assert_called_with(
+            json.dumps({"active": False, "sensorId": "sensorid", "temp": 22.0, "time": 5678}))
 
     def testTestTempAndLog_withSingleProvider_withNoneReturns(self):
         tempProvider = TempProvider("sensorid")
@@ -38,13 +41,15 @@ class BeerTempTest(unittest.TestCase):
         beerTemp = BeerTemp([tempProvider], heatingElement, tempLogger)
         beerTemp.testTempAndLog()
         self.assertFalse(heatingElement.isActive())
-        self.assertNotIn(call("1234\tsensorid\t18.0\t1\n"), tempLogger._write.mock_calls)
+        self.assertNotIn(call(json.dumps({"active": True, "sensorId": "sensorid", "temp": 18.0, "time": 5678})),
+            tempLogger._write.mock_calls)
 
         tempProvider.getTemp = mock.Mock(return_value=22.0)
         time.time = mock.Mock(return_value=5678)
         beerTemp.testTempAndLog()
         self.assertFalse(heatingElement.isActive())
-        tempLogger._write.assert_called_with("5678\tsensorid\t22.0\t0\n")
+        tempLogger._write.assert_called_with(
+            json.dumps({"active": False, "sensorId": "sensorid", "temp": 22.0, "time": 5678}))
 
     def testTestTempAndLog_withMultipleProviders(self):
         tempProvider1 = TempProvider("sensorid1")
@@ -62,14 +67,16 @@ class BeerTempTest(unittest.TestCase):
         beerTemp = BeerTemp([tempProvider1, tempProvider2, tempProvider3], heatingElement, tempLogger)
         beerTemp.testTempAndLog()
         self.assertFalse(heatingElement.isActive())
-        calls = [call._write("1234\tsensorid1\t18.0\t0\n"), call._write("1234\tsensorid2\t22.0\t0\n"),
-                 call._write("1234\tsensorid3\t21.0\t0\n")]
+        calls = [call.write(json.dumps({"active": False, "sensorId": "sensorid1", "temp": 18.0, "time": 1234})),
+                 call.write(json.dumps({"active": False, "sensorId": "sensorid2", "temp": 22.0, "time": 1234})),
+                 call.write(json.dumps({"active": False, "sensorId": "sensorid3", "temp": 21.0, "time": 1234}))]
         tempLogger._write.assert_has_calls(calls)
 
         tempProvider3.getTemp = mock.Mock(return_value=19.8)
         time.time = mock.Mock(return_value=5678)
         beerTemp.testTempAndLog()
         self.assertTrue(heatingElement.isActive())
-        calls = [call._write("5678\tsensorid1\t18.0\t1\n"), call._write("5678\tsensorid2\t22.0\t1\n"),
-                 call._write("5678\tsensorid3\t19.8\t1\n")]
+        calls = [call.write(json.dumps({"active": True, "sensorId": "sensorid1", "temp": 18.0, "time": 5678})),
+                 call.write(json.dumps({"active": True, "sensorId": "sensorid2", "temp": 22.0, "time": 5678})),
+                 call.write(json.dumps({"active": True, "sensorId": "sensorid3", "temp": 19.8, "time": 5678}))]
         tempLogger._write.assert_has_calls(calls)

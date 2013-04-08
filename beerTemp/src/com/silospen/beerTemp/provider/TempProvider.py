@@ -5,6 +5,7 @@ class TempProvider():
     PARENT_SENSOR_PATH = "/sys/bus/w1/devices/"
     SENSOR_PATH = PARENT_SENSOR_PATH + "{0}/w1_slave"
     LOG = logging.getLogger('TempProvider')
+    AMBIENT_SENSOR = "28-000004a2bb68"
 
     def getId(self):
         return self._sensorId
@@ -43,6 +44,7 @@ class TempProvider():
 
     def __init__(self, sensorId):
         self._sensorId = sensorId
+        self._ambient = sensorId == self.AMBIENT_SENSOR
 
 
     def __eq__(self, other):
@@ -50,3 +52,6 @@ class TempProvider():
             return self.__dict__ == other.__dict__
         else:
             return False
+
+    def isAmbient(self):
+        return self._ambient

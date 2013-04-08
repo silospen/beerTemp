@@ -20,9 +20,9 @@ class BeerTemp():
         for tempProvider in self._tempProviders:
             temp = tempProvider.getTemp()
             if temp is not None:
-                temps.append((tempProvider.getId(), temp))
+                temps.append((tempProvider.getId(), temp, tempProvider.isAmbient()))
 
-        if sum(temp[1] < self.THRESHOLD for temp in temps) > len(temps) // 2:
+        if sum(temp[1] < self.THRESHOLD for temp in temps if not temp[2]) > len(temps) // 2:
             self._heatingElement.activate()
         else:
             self._heatingElement.deactivate()

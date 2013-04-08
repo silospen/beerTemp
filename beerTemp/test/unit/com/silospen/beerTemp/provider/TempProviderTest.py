@@ -11,6 +11,10 @@ class TempProviderTest(unittest.TestCase):
         self.assertEqual(20.25, tempProvider.getTemp())
         TempProvider._rawTempHandle.assert_called_once_with("/sys/bus/w1/devices/test_serial/w1_slave")
 
+    def testSetAmbient(self):
+        self.assertFalse(TempProvider("test_serial").isAmbient())
+        self.assertTrue(TempProvider("28-000004a2bb68").isAmbient())
+
     def testGetTemp_withMissingTempString(self):
         self._setupRawTempExpectation("29 00 4b 46 ff ff 08 10 eb : crc=eb YES\n29 00 4b 46 ff ff 08 10 eb t=")
         tempProvider = TempProvider("test_serial")
